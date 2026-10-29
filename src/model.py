@@ -1,58 +1,83 @@
 import numpy as np
+from dataclasses import dataclass
 
-# Vehicle Parameters:
-CD = 0.02
-CL = 0.080
-A = 4.00 # meters^2
-Rn = 0.01 # nose radius, meters
 
-#Thermal properties:
-cp = 900.0     # Specific heat capacity, J/(kg*K)
-rho_s = 1600.0 # material density, kg/m^3
-epsilon = 0.85 # surface emissivity
-delta = 0.005  # effective heated thickness, m
-sigma = 5.670374419e-8 # Stefan-Boltzmann constant
+@dataclass(frozen=True)
+class Parameters:
+    """SI parameters; defaults preserve the group's simplified model."""
+    CD: float = 0.02
+    CL: float = 0.080
+    A: float = 4.0
+    Rn: float = 0.01
+    cp: float = 900.0
+    rho_s: float = 1600.0
+    epsilon: float = 0.85
+    delta: float = 0.005
+    sigma: float = 5.670374419e-8
+    rho30: float = 0.0184
+    H: float = 7000.0
+    g0: float = 9.81
+    RE: float = 6.371e6
+    heating_coefficient: float = 1.7415e-4
 
-#Atmosphere parameters:
-rho30 = 0.0184  # density at 30km, kg/m^3
-H = 7000.0      # Atmospheric scale height, m
+    def __post_init__(self):
+        for name, value in vars(self).items():
+            if not np.isfinite(value) or value < 0:
+                raise ValueError(f'{name} must be finite and nonnegative')
+        for name in ('Rn', 'cp', 'rho_s', 'delta', 'H', 'RE'):
+            if getattr(self, name) == 0:
+                raise ValueError(f'{name} must be positive')
+        if self.epsilon > 1:
+            raise ValueError('epsilon must lie in [0, 1]')
 
-#Gravity
-g0 = 9.81     # gravitational acceleration, m/s^2
-RE = 6.371e6  # Earth's radius, m
+    @property
+    def CA(self):
+        return self.rho_s * self.cp * self.delta
 
-#thermal capacity per unit area:
-CA = rho_s * cp * delta
 
-#functions
+DEFAULT_PARAMETERS = Parameters()
 
-def atmo_density(h):
-    return rho30*np.exp(-(h-30000.0)/H)
+# Compatibility names for the original module API. For parameter studies,
+# pass a Parameters instance instead of modifying these module attributes.
+CD, CL, A, Rn = (getattr(DEFAULT_PARAMETERS, k) for k in ('CD', 'CL', 'A', 'Rn'))
+cp, rho_s, epsilon, delta, sigma = (
+    getattr(DEFAULT_PARAMETERS, k) for k in ('cp', 'rho_s', 'epsilon', 'delta', 'sigma'))
+rho30, H, g0, RE = (getattr(DEFAULT_PARAMETERS, k) for k in ('rho30', 'H', 'g0', 'RE'))
+CA = DEFAULT_PARAMETERS.CA
 
-def gravity(h):
-    return g0*(RE/(RE+h))**2
+def atmo_density(h, params=DEFAULT_PARAMETERS):
+    return params.rho30*np.exp(-(h-30000.0)/params.H)
 
-def flight_model(t, y):
+def gravity(h, params=DEFAULT_PARAMETERS):
+    return params.g0*(params.RE/(params.RE+h))**2
+
+def flight_model(t, y, params=DEFAULT_PARAMETERS):
     """Return derivatives [dh/dt, dV/dt, dgamma/dt, dTs/dt, dm/dt]"""
     h, V, gamma, Ts, m = y
-    
-    rho = atmo_density(h)
-    g = gravity(h)
-    
-    D = 0.5 * rho * V**2 * CD * A
-    L = 0.5 * rho * V**2 * CL * A
-    
-    q_conv = 1.7415e-4 * np.sqrt(rho/Rn) * V**3
-    
-    q_rad = epsilon * sigma * Ts**4
-    
+    if not np.all(np.isfinite(y)) or V <= 0 or m <= 0 or Ts < 0 or h <= -params.RE:
+        raise ValueError('State must be finite with V>0, m>0, Ts>=0, h>-RE')
+
+    rho = atmo_density(h, params)
+    g = gravity(h, params)
+
+    D = 0.5 * rho * V**2 * params.CD * params.A
+    L = 0.5 * rho * V**2 * params.CL * params.A
+
+    q_conv = convective_flux(h, V, params)
+
+    q_rad = params.epsilon * params.sigma * Ts**4
+
     dh_dt = V*np.sin(gamma)
     dV_dt = -D / m - g * np.sin(gamma)
     dgamma_dt = L / (m*V) - g * np.cos(gamma) / V
-    
-    dTs_dt = (q_conv - q_rad) / CA
-    
+
+    dTs_dt = (q_conv - q_rad) / params.CA
+
     dm_dt = 0.0
-    
+
     return np.array([dh_dt, dV_dt, dgamma_dt, dTs_dt, dm_dt])
-    
+
+
+def convective_flux(h, V, params=DEFAULT_PARAMETERS):
+    """Sutton--Graves-style stagnation heat flux in W/m^2."""
+    return params.heating_coefficient * np.sqrt(atmo_density(h, params)/params.Rn) * V**3
