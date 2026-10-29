@@ -1,0 +1,156 @@
+{
+  "baseline": {
+    "peak_temperature_K": 2632.815443659719,
+    "peak_time_s": 28.0,
+    "peak_heat_flux_W_m2": 2316692.6363863647,
+    "heat_load_J_m2": 563571555.3553122,
+    "final_altitude_m": 21342.674116331902,
+    "final_speed_m_s": 1178.826806939411,
+    "end_time_s": 400.0,
+    "reached_10km": false,
+    "mechanical_energy_residual_J_kg": -0.045536959543824196,
+    "local_thermal_dt_limit_s": 5.69969436186333,
+    "max_mass_drift_kg": 0.0
+  },
+  "dt_s": 0.1,
+  "horizon_s": 400.0,
+  "initial_state": [
+    30000.0,
+    2112.14,
+    -0.03490658503988659,
+    300.0,
+    1400.0
+  ],
+  "parameters": {
+    "CD": 0.02,
+    "CL": 0.08,
+    "A": 4.0,
+    "Rn": 0.01,
+    "cp": 900.0,
+    "rho_s": 1600.0,
+    "epsilon": 0.85,
+    "delta": 0.005,
+    "sigma": 5.670374419e-08,
+    "rho30": 0.0184,
+    "H": 7000.0,
+    "g0": 9.81,
+    "RE": 6371000.0,
+    "heating_coefficient": 0.00017415
+  },
+  "python": "3.14.7",
+  "numpy": "2.5.2",
+  "matplotlib": "3.11.1",
+  "max_sweep_peak_temperature_difference_K": 0.000653428500299924,
+  "full_ivp_convergence": [
+    {
+      "dt_s": 1.0,
+      "altitude_error_m": 0.00017216216656379402,
+      "speed_error_m_s": 2.236303089375724e-06,
+      "angle_error_rad": 5.580675612598673e-09,
+      "temperature_error_K": 0.05917070361010701,
+      "temperature_order": "",
+      "derivative_calls": 1600
+    },
+    {
+      "dt_s": 0.5,
+      "altitude_error_m": 1.0759897122625262e-05,
+      "speed_error_m_s": 1.3961084732727613e-07,
+      "angle_error_rad": 3.4834882201018047e-10,
+      "temperature_error_K": 0.0032222153927250474,
+      "temperature_order": 4.198758209547669,
+      "derivative_calls": 3200
+    },
+    {
+      "dt_s": 0.25,
+      "altitude_error_m": 6.722693797200918e-07,
+      "speed_error_m_s": 8.71841621119529e-09,
+      "angle_error_rad": 2.1749803347237417e-11,
+      "temperature_error_K": 0.00018839477479559719,
+      "temperature_order": 4.096222078996699,
+      "derivative_calls": 6400
+    },
+    {
+      "dt_s": 0.125,
+      "altitude_error_m": 4.1869498090818524e-08,
+      "speed_error_m_s": 5.522906576516107e-10,
+      "angle_error_rad": 1.3510581542419686e-12,
+      "temperature_error_K": 1.1345123311912175e-05,
+      "temperature_order": 4.053614756696614,
+      "derivative_calls": 12800
+    }
+  ],
+  "exact_limit_convergence": [
+    {
+      "case": "radiative_cooling",
+      "dt_s": 2.0,
+      "max_error": 0.25034291246629437,
+      "observed_order": ""
+    },
+    {
+      "case": "radiative_cooling",
+      "dt_s": 1.0,
+      "max_error": 0.006855478210582078,
+      "observed_order": 5.190504495082987
+    },
+    {
+      "case": "radiative_cooling",
+      "dt_s": 0.5,
+      "max_error": 0.00020807360533581232,
+      "observed_order": 5.042091433846966
+    },
+    {
+      "case": "radiative_cooling",
+      "dt_s": 0.25,
+      "max_error": 7.190508767962456e-06,
+      "observed_order": 4.854856304063403
+    },
+    {
+      "case": "radiative_cooling",
+      "dt_s": 0.125,
+      "max_error": 2.8774229576811194e-07,
+      "observed_order": 4.643244646699945
+    },
+    {
+      "case": "radiative_cooling",
+      "dt_s": 0.0625,
+      "max_error": 1.3218595995567739e-08,
+      "observed_order": 4.4441364458604316
+    },
+    {
+      "case": "radiative_cooling",
+      "dt_s": 0.03125,
+      "max_error": 6.812115316279233e-10,
+      "observed_order": 4.278322282525531
+    },
+    {
+      "case": "constant_altitude_drag",
+      "dt_s": 2.0,
+      "max_error": 0.019732434105662833,
+      "observed_order": ""
+    },
+    {
+      "case": "constant_altitude_drag",
+      "dt_s": 1.0,
+      "max_error": 0.001405356711075001,
+      "observed_order": 3.8115606610871438
+    },
+    {
+      "case": "constant_altitude_drag",
+      "dt_s": 0.5,
+      "max_error": 8.998635121315601e-05,
+      "observed_order": 3.9650863595337897
+    },
+    {
+      "case": "constant_altitude_drag",
+      "dt_s": 0.25,
+      "max_error": 5.664287300533033e-06,
+      "observed_order": 3.989739847660347
+    },
+    {
+      "case": "constant_altitude_drag",
+      "dt_s": 0.125,
+      "max_error": 3.544719220371917e-07,
+      "observed_order": 3.9981511825319656
+    }
+  ]
+}

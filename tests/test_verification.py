@@ -8,6 +8,19 @@ from src.rk4 import rk4_step
 Y0 = np.array([30000., 2112.14, np.deg2rad(-2.), 300., 1400.])
 
 
+@pytest.mark.parametrize('state,expected', [
+    ([30000., 2112.14, np.deg2rad(-2.), 300., 1400.],
+     [-73.71262296522039, -2.006120178267873, -0.00015681280689557736, 309.09488520177536, 0.]),
+    ([20000., 1800., np.deg2rad(-4.), 2200., 1400.],
+     [-125.56165273942554, -6.427442492145637, 0.010391643914155193, 234.05040846215658, 0.]),
+])
+def test_independent_derivative_benchmarks(state, expected):
+    # Reference numbers separately evaluated with Python math scalar arithmetic,
+    # without calling the project's density, gravity, or heat-flux helpers.
+    np.testing.assert_allclose(flight_model(0., np.array(state)), expected,
+                               rtol=1e-12, atol=1e-12)
+
+
 @pytest.mark.parametrize('dt', [0., -.1, np.nan, np.inf])
 def test_invalid_time_step(dt):
     with pytest.raises(ValueError):

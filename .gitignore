@@ -2,3 +2,9 @@
 *.py[cod]
 .pytest_cache/
 .venv/
+# Report build artifacts
+report/*.aux
+report/*.log
+report/*.out
+report/*.synctex.gz
+report/build-output.txt
